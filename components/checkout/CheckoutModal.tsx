@@ -125,8 +125,10 @@ export function CheckoutModal() {
         >
           {/* Close Button */}
           <button
+            type="button"
             onClick={() => setIsCheckoutOpen(false)}
-            className="absolute top-6 right-6 p-2 rounded-full text-pink-400 hover:text-pink-600 hover:bg-pink-100/50"
+            className="absolute top-6 right-6 p-2 rounded-full text-pink-400 hover:text-pink-600 hover:bg-pink-100/50 z-20 cursor-pointer focus:outline-none"
+            aria-label="Cerrar modal"
           >
             <X className="w-6 h-6" />
           </button>

@@ -120,8 +120,12 @@ ALTER TABLE public.prizes ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
 CREATE POLICY "Public profile select" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Allow public insert to profiles" ON public.profiles FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can manage own profile" ON public.profiles FOR ALL USING (auth.uid() = id);
+
+CREATE POLICY "Allow public insert to user_addresses" ON public.user_addresses FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can manage own addresses" ON public.user_addresses FOR ALL USING (auth.uid() = user_id);
+
 CREATE POLICY "Allow public insert to orders" ON public.orders FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);
 CREATE POLICY "Users can view own rewards" ON public.user_rewards FOR ALL USING (auth.uid() = user_id);
