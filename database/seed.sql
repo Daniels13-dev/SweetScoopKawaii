@@ -1,7 +1,40 @@
 -- Seed Script para insertar 1 Usuario de prueba y 1 Pedido de prueba en Supabase
 -- Copia y ejecuta este script en el SQL Editor de tu proyecto en Supabase
 
--- 1. Insertar 1 Perfil de prueba
+-- 1. Insertar usuario de autenticación de prueba en auth.users (Satisface la clave foránea)
+INSERT INTO auth.users (
+  id,
+  instance_id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  recovery_sent_at,
+  last_sign_in_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  is_super_admin,
+  created_at,
+  updated_at
+) VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000000',
+  'authenticated',
+  'authenticated',
+  'camila.kawaii@sweetscoop.com',
+  crypt('123456', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW(),
+  '{"provider":"email","providers":["email"]}',
+  '{"full_name":"Camila Rodríguez"}',
+  FALSE,
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+-- 2. Insertar 1 Perfil de prueba en public.profiles
 INSERT INTO public.profiles (id, email, full_name, whatsapp, city)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
@@ -12,7 +45,7 @@ VALUES (
 )
 ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name;
 
--- 2. Insertar 1 Dirección guardada de prueba
+-- 3. Insertar 1 Dirección guardada de prueba en public.user_addresses
 INSERT INTO public.user_addresses (user_id, label, recipient_name, recipient_phone, city, address_line, notes, is_default)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
@@ -25,7 +58,7 @@ VALUES (
   true
 );
 
--- 3. Insertar 1 Pedido de prueba
+-- 4. Insertar 1 Pedido de prueba en public.orders
 INSERT INTO public.orders (
   user_id,
   customer_name,
