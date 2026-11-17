@@ -25,10 +25,14 @@ export function CartDrawer() {
 
   if (!isCartOpen) return null;
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
-    const res = applyCoupon(couponInput);
+    
+    // Set loading message
+    setCouponMsg({ success: false, message: 'Validando cupón...' });
+    
+    const res = await applyCoupon(couponInput);
     setCouponMsg(res);
     if (res.success) {
       setCouponInput('');

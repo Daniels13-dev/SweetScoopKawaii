@@ -17,6 +17,10 @@
     --text-secondary: #7C5265;
   }
 
+  html {
+    background-color: #fce7f3; /* Matches footer to prevent white overscroll */
+  }
+
   body {
     background-color: #FFF7FA;
     background-image: 
@@ -26,7 +30,8 @@
       radial-gradient(at 0% 100%, rgba(186, 230, 253, 0.2) 0px, transparent 50%);
     background-attachment: fixed;
     color: var(--text-primary);
-    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
     font-family: var(--font-sans), 'Quicksand', 'Nunito', system-ui, -apple-system, sans-serif;
   }
 }
