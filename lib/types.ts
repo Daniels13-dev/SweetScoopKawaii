@@ -54,6 +54,7 @@ export interface UserProfile {
   whatsapp: string;
   city: string;
   avatar_url?: string;
+  role?: 'user' | 'superadmin';
   created_at?: string;
 }
 

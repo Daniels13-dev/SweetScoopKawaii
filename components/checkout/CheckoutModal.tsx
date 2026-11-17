@@ -81,6 +81,7 @@ export function CheckoutModal() {
 
     const orderPayload = {
       userId: user?.id,
+      email: user?.email,
       ...formData,
       cartItems: items,
       subtotal: totals.subtotal,

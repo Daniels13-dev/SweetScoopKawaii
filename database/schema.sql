@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   full_name TEXT NOT NULL,
   whatsapp TEXT NOT NULL,
   city TEXT DEFAULT 'Manizales',
-  avatar_url TEXT
+  avatar_url TEXT,
+  role TEXT DEFAULT 'user'
 );
 
 -- 2. User Addresses Table (Saved Shipping Addresses)
@@ -124,10 +125,12 @@ CREATE POLICY "Allow public insert to profiles" ON public.profiles FOR INSERT WI
 CREATE POLICY "Users can manage own profile" ON public.profiles FOR ALL USING (auth.uid() = id);
 
 CREATE POLICY "Allow public insert to user_addresses" ON public.user_addresses FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public user_addresses select" ON public.user_addresses FOR SELECT USING (true);
 CREATE POLICY "Users can manage own addresses" ON public.user_addresses FOR ALL USING (auth.uid() = user_id);
 
 CREATE POLICY "Allow public insert to orders" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);
+CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'superadmin');
+CREATE POLICY "Superadmin can update orders" ON public.orders FOR UPDATE USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'superadmin');
 CREATE POLICY "Users can view own rewards" ON public.user_rewards FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Allow public select on active coupons" ON public.coupons FOR SELECT USING (active = true);
 CREATE POLICY "Allow public insert to game_results" ON public.game_results FOR INSERT WITH CHECK (true);

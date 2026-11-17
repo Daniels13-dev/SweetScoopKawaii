@@ -150,6 +150,12 @@ export function AtrapaLaTernuraModal() {
     }, 700);
   };
 
+  useEffect(() => {
+    if (gameState === 'playing' && score >= TARGET_SCORE) {
+      handleWin(score);
+    }
+  }, [score, gameState]);
+
   const catchItem = (item: FallingItem) => {
     if (gameState !== 'playing') return;
 
@@ -165,25 +171,11 @@ export function AtrapaLaTernuraModal() {
     } else if (item.isGolden) {
       // Golden bonus! +2 points
       addFeedback('+2 👑', item.x, item.y, false);
-
-      setScore(prevScore => {
-        const newScore = prevScore + 2;
-        if (newScore >= TARGET_SCORE) {
-          handleWin(newScore);
-        }
-        return newScore;
-      });
+      setScore(prev => prev + 2);
     } else {
       // Normal good item! +1 point
       addFeedback('+1', item.x, item.y, false);
-
-      setScore(prevScore => {
-        const newScore = prevScore + 1;
-        if (newScore >= TARGET_SCORE) {
-          handleWin(newScore);
-        }
-        return newScore;
-      });
+      setScore(prev => prev + 1);
     }
   };
 

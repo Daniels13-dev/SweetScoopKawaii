@@ -11,7 +11,7 @@ export function Footer() {
   const whatsappUrl = buildWhatsAppQuickCartLink(items, totals, coupon);
 
   return (
-    <footer className="bg-gradient-to-b from-pink-50/50 to-pink-100/80 border-t border-pink-200/60 pt-16 pb-12 mt-20 text-pink-950">
+    <footer className="w-full bg-gradient-to-b from-pink-50/60 via-pink-100/80 to-[#fce7f3] border-t border-pink-200/60 pt-10 pb-[calc(2rem+env(safe-area-inset-bottom))] mt-12 text-pink-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">

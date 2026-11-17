@@ -44,7 +44,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const savedAddresses = localStorage.getItem('kawaii_user_addresses');
 
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsed = JSON.parse(savedUser);
+      if (parsed.email === 'sweetscoopkawaii@gmail.com' && parsed.role !== 'superadmin') {
+        parsed.role = 'superadmin';
+        localStorage.setItem('kawaii_user_profile', JSON.stringify(parsed));
+      }
+      setUser(parsed);
     }
     if (savedAddresses) {
       setAddresses(JSON.parse(savedAddresses));
@@ -77,6 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loadSupabaseUserData = async (userId: string, email: string) => {
     const profile = await fetchUserProfile(userId);
     if (profile) {
+      if (email === 'sweetscoopkawaii@gmail.com' && profile.role !== 'superadmin') {
+        profile.role = 'superadmin';
+        await updateUserProfileInSupabase(userId, profile);
+      }
       setUser(profile);
       localStorage.setItem('kawaii_user_profile', JSON.stringify(profile));
     } else {
@@ -86,15 +95,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         full_name: email.split('@')[0],
         whatsapp: '',
-        city: 'Manizales'
+        city: 'Manizales',
+        role: email === 'sweetscoopkawaii@gmail.com' ? 'superadmin' : 'user'
       };
       setUser(newProf);
       localStorage.setItem('kawaii_user_profile', JSON.stringify(newProf));
+      if (supabase && !userId.startsWith('usr_')) {
+        await updateUserProfileInSupabase(userId, newProf);
+      }
     }
 
     const userAddrs = await fetchUserAddressesFromSupabase(userId);
-    setAddresses(userAddrs);
-    localStorage.setItem('kawaii_user_addresses', JSON.stringify(userAddrs));
+    if (userAddrs && userAddrs.length > 0) {
+      setAddresses(userAddrs);
+      localStorage.setItem('kawaii_user_addresses', JSON.stringify(userAddrs));
+    } else {
+      const localAddrs = localStorage.getItem('kawaii_user_addresses');
+      if (localAddrs) {
+        try {
+          const parsed = JSON.parse(localAddrs);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setAddresses(parsed);
+          }
+        } catch (e) {}
+      }
+    }
   };
 
   const login = async (email: string, password?: string) => {
@@ -123,12 +148,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Fallback demo login
+    const isSuperAdmin = cleanEmail === 'sweetscoopkawaii@gmail.com';
     const demoProfile: UserProfile = {
       id: 'usr_' + Date.now(),
       email: cleanEmail,
-      full_name: cleanEmail.split('@')[0],
-      whatsapp: '3001234567',
-      city: 'Manizales'
+      full_name: isSuperAdmin ? 'Admin Kawaii' : cleanEmail.split('@')[0],
+      whatsapp: '3104494494',
+      city: 'Manizales',
+      role: isSuperAdmin ? 'superadmin' : 'user'
     };
 
     setUser(demoProfile);
@@ -212,7 +239,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('kawaii_user_profile', JSON.stringify(updated));
 
     if (supabase && !user.id.startsWith('usr_')) {
-      await updateUserProfileInSupabase(user.id, data);
+      await updateUserProfileInSupabase(user.id, updated);
     }
     return true;
   };
@@ -220,26 +247,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const addAddress = async (addressData: Omit<UserAddress, 'id' | 'user_id'>) => {
     if (!user) return false;
 
-    const newAddr: UserAddress = {
-      id: 'addr_' + Date.now(),
+    const payload = {
       user_id: user.id,
-      ...addressData,
-      is_default: addresses.length === 0 ? true : addressData.is_default
+      label: addressData.label || 'Casa',
+      recipient_name: addressData.recipient_name || user.full_name,
+      recipient_phone: addressData.recipient_phone || user.whatsapp,
+      city: addressData.city || user.city || 'Manizales',
+      address_line: addressData.address_line,
+      notes: addressData.notes || '',
+      is_default: addresses.length === 0 ? true : Boolean(addressData.is_default)
     };
 
-    // If setting default, unset others
+    let createdAddr: UserAddress = {
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'addr_' + Date.now(),
+      ...payload
+    };
+
+    if (supabase && !user.id.startsWith('usr_')) {
+      // Ensure the profile exists in the DB before inserting an address to prevent FK constraint failures
+      await updateUserProfileInSupabase(user.id, user);
+      
+      const res = await saveUserAddressToSupabase(payload);
+      if (res.success && res.data) {
+        createdAddr = res.data as UserAddress;
+      }
+    }
+
     let updatedAddrs = [...addresses];
-    if (newAddr.is_default) {
+    if (createdAddr.is_default) {
       updatedAddrs = updatedAddrs.map(a => ({ ...a, is_default: false }));
     }
-    updatedAddrs.push(newAddr);
+    updatedAddrs.push(createdAddr);
 
     setAddresses(updatedAddrs);
     localStorage.setItem('kawaii_user_addresses', JSON.stringify(updatedAddrs));
-
-    if (supabase && !user.id.startsWith('usr_')) {
-      await saveUserAddressToSupabase(newAddr);
-    }
     return true;
   };
 

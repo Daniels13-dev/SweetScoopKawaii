@@ -43,7 +43,7 @@ export function HeroSection() {
         
         {/* Top Badge */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-pink-200/80 shadow-md text-xs sm:text-sm font-extrabold text-pink-700 mb-6 backdrop-blur-md"
@@ -55,9 +55,9 @@ export function HeroSection() {
 
         {/* Main Emotional Title */}
         <motion.h1
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={false}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          transition={{ duration: 0.8 }}
           className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-none max-w-5xl mx-auto text-pink-950"
         >
           Descubre la cucharada sorpresa{' '}
@@ -68,9 +68,9 @@ export function HeroSection() {
 
         {/* Emotional Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8 }}
           className="mt-6 text-lg sm:text-xl md:text-2xl text-pink-900/80 max-w-3xl mx-auto font-medium leading-relaxed"
         >
           No vendemos solo productos: entregamos <strong className="text-pink-600 font-extrabold">emoción, ilusión y magia</strong> en cada cucharada llena de tesoros Kawaii seleccionados con amor tierno.
@@ -78,9 +78,9 @@ export function HeroSection() {
 
         {/* Action Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8 }}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <button
@@ -101,9 +101,9 @@ export function HeroSection() {
 
         {/* Turn Reservation Highlight Pill */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35 }}
+          transition={{ duration: 0.8 }}
           className="mt-8 max-w-xl mx-auto bg-amber-100/90 border-2 border-amber-300 p-3.5 rounded-2xl shadow-md text-xs sm:text-sm font-bold text-amber-950 flex flex-col sm:flex-row items-center justify-center gap-2"
         >
           <span className="text-base">📌</span>
@@ -117,9 +117,9 @@ export function HeroSection() {
 
         {/* Visual Scoop Showcase Card */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          transition={{ duration: 1 }}
           className="mt-14 max-w-4xl mx-auto glass-card p-6 sm:p-10 rounded-[2.5rem] relative shadow-2xl border-2 border-pink-200"
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
