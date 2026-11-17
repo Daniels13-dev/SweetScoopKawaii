@@ -18,19 +18,19 @@ import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp';
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative flex flex-col justify-between">
+    <div className="min-h-[100dvh] bg-pink-50/20 text-pink-950 flex flex-col justify-between overflow-x-hidden">
       {/* Header Navigation */}
       <Navbar />
 
       {/* Main Experience Sections */}
-      <div className="flex-1 space-y-4">
+      <main className="flex-1">
         <HeroSection />
         <HowItWorksSection />
         <WorldCardsSection />
         <SizeComparisonSection />
         <MagicIncentivesBanner />
         <FaqSection />
-      </div>
+      </main>
 
       {/* Footer */}
       <Footer />
@@ -44,6 +44,6 @@ export default function Home() {
       <AuthModal />
       <AccountDrawer />
       <FloatingWhatsApp />
-    </main>
+    </div>
   );
 }

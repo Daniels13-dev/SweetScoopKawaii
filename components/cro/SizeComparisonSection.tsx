@@ -124,11 +124,11 @@ export function SizeComparisonSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="glass-card p-8 rounded-[2.5rem] bg-gradient-to-b from-purple-50 via-pink-50 to-purple-100 border-4 border-pink-400 flex flex-col justify-between relative shadow-2xl scale-102 sm:scale-105 z-10"
+            className="glass-card p-6 sm:p-8 rounded-[2.5rem] bg-gradient-to-b from-purple-50 via-pink-50 to-purple-100 border-4 border-pink-400 flex flex-col justify-between relative shadow-2xl scale-100 sm:scale-105 z-10"
           >
             {/* Top Popular Highlight Floating Ribbon */}
-            <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full kawaii-gradient-btn text-white text-xs font-black tracking-wide shadow-xl flex items-center gap-1.5 whitespace-nowrap">
-              <Star className="w-4 h-4 fill-amber-300 text-amber-300 animate-spin" />
+            <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-3 sm:px-5 py-1.5 rounded-full kawaii-gradient-btn text-white text-[10px] sm:text-xs font-black tracking-wide shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+              <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-300 text-amber-300 animate-spin" />
               <span>✨ MÁS POPULAR • MAYOR VALOR PERCIBIDO 🔥</span>
             </div>
 

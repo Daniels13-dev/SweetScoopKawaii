@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, User, MapPin, Phone, Mail, Plus, Trash2, CheckCircle2, LogOut, Sparkles, Heart, Save, Home } from 'lucide-react';
+import { X, User, MapPin, Phone, Mail, Plus, Trash2, CheckCircle2, LogOut, Sparkles, Heart, Save, Home, ShieldAlert, Package, Loader2, Truck, Clock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { fetchUserOrders } from '@/lib/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export function AccountDrawer() {
   const {
@@ -18,7 +20,9 @@ export function AccountDrawer() {
     setDefaultAddress
   } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'addresses'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'addresses' | 'orders'>('profile');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Edit Profile state
   const [fullName, setFullName] = useState(user?.full_name || '');
@@ -34,6 +38,30 @@ export function AccountDrawer() {
   const [addrCity, setAddrCity] = useState(user?.city || 'Manizales');
   const [addrLine, setAddrLine] = useState('');
   const [addrNotes, setAddrNotes] = useState('');
+
+  // Sync inputs on open
+  React.useEffect(() => {
+    if (user) {
+      setFullName(user.full_name || '');
+      setWhatsapp(user.whatsapp || '');
+      setCity(user.city || 'Manizales');
+      setAddrRecipient(user.full_name || '');
+      setAddrPhone(user.whatsapp || '');
+      setAddrCity(user.city || 'Manizales');
+    }
+  }, [user, isAccountOpen]);
+
+  React.useEffect(() => {
+    if (activeTab === 'orders' && user) {
+      const loadOrders = async () => {
+        setLoadingOrders(true);
+        const data = await fetchUserOrders(user.id, user.whatsapp);
+        setOrders(data);
+        setLoadingOrders(false);
+      };
+      loadOrders();
+    }
+  }, [activeTab, user]);
 
   if (!isAccountOpen || !user) return null;
 
@@ -101,6 +129,16 @@ export function AccountDrawer() {
                   <p className="text-xs font-semibold text-pink-700">
                     {user.email}
                   </p>
+                  {user.role === 'superadmin' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      <span>Panel Admin</span>
+                    </Link>
+                  )}
                 </div>
               </div>
 
@@ -135,7 +173,20 @@ export function AccountDrawer() {
                 }`}
               >
                 <MapPin className="w-4 h-4" />
-                <span>Direcciones ({addresses.length})</span>
+                <span className="hidden sm:inline">Dir. ({addresses.length})</span>
+                <span className="sm:hidden">({addresses.length})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`flex-1 py-2 text-xs font-extrabold rounded-2xl flex items-center justify-center gap-1.5 transition-all ${
+                  activeTab === 'orders'
+                    ? 'bg-white text-pink-600 shadow-sm border border-pink-200'
+                    : 'text-pink-900/70 hover:text-pink-950'
+                }`}
+              >
+                <Package className="w-4 h-4" />
+                <span className="hidden sm:inline">Pedidos</span>
               </button>
             </div>
 
@@ -307,7 +358,7 @@ export function AccountDrawer() {
                               {addr.address_line}
                             </p>
                             <p className="text-[11px] font-semibold text-pink-700">
-                              {addr.city} • Recibe: {addr.recipient_name} ({addr.recipient_phone})
+                              {addr.city} • {addr.recipient_phone}
                             </p>
                           </div>
 
@@ -333,6 +384,65 @@ export function AccountDrawer() {
                     ))
                   )}
 
+                </div>
+              )}
+
+              {/* TAB 3: USER ORDERS */}
+              {activeTab === 'orders' && (
+                <div className="space-y-4">
+                  <h4 className="font-extrabold text-pink-950 text-sm">
+                    Historial de Compras
+                  </h4>
+                  
+                  {loadingOrders ? (
+                    <div className="py-10 flex justify-center">
+                      <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                    </div>
+                  ) : orders.length === 0 ? (
+                    <div className="bg-pink-50/80 p-6 rounded-3xl border border-pink-200 text-center flex flex-col items-center">
+                      <Package className="w-10 h-10 text-pink-300 mb-3" />
+                      <p className="text-sm font-semibold text-pink-900">Aún no has hecho pedidos</p>
+                      <p className="text-xs text-pink-600 mt-1">¡Tus compras mágicas aparecerán aquí!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {orders.map(order => (
+                        <div key={order.id} className="bg-white p-4 rounded-3xl border border-pink-200 shadow-sm relative overflow-hidden group">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <span className="text-[10px] font-black uppercase text-pink-500 tracking-wider">Pedido #{order.order_number}</span>
+                              <div className="text-xs font-semibold text-pink-900/60 mt-0.5 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {new Date(order.created_at).toLocaleDateString('es-CO')}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-black text-pink-950 text-sm">
+                                {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(order.total_amount)}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 pt-3 border-t border-pink-100 flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-pink-700">Estado actual:</span>
+                            <span className={`px-2.5 py-1 text-[10px] font-black rounded-full flex items-center gap-1 uppercase tracking-wider ${
+                              order.status === 'pendiente' ? 'bg-amber-100 text-amber-700' :
+                              order.status === 'confirmado' ? 'bg-blue-100 text-blue-700' :
+                              order.status === 'enviado' ? 'bg-purple-100 text-purple-700' :
+                              order.status === 'entregado' ? 'bg-emerald-100 text-emerald-700' :
+                              'bg-slate-100 text-slate-700'
+                            }`}>
+                              {order.status === 'pendiente' && <Clock className="w-3 h-3" />}
+                              {order.status === 'confirmado' && <CheckCircle2 className="w-3 h-3" />}
+                              {order.status === 'enviado' && <Truck className="w-3 h-3" />}
+                              {order.status === 'entregado' && <Heart className="w-3 h-3" />}
+                              {order.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

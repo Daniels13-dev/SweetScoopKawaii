@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ScoopProduct, CartItem, AppliedCoupon, WorldId } from '@/lib/types';
 import { calculateCartTotals, triggerConfetti } from '@/lib/utils';
+import { validateCoupon } from '@/lib/supabase/client';
 import { SCOOP_PRODUCTS } from '@/lib/constants';
 
 interface CartContextType {
@@ -12,7 +13,7 @@ interface CartContextType {
   updateQuantity: (cartId: string, quantity: number) => void;
   clearCart: () => void;
   coupon: AppliedCoupon | null;
-  applyCoupon: (code: string) => { success: boolean; message: string };
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
   totals: ReturnType<typeof calculateCartTotals>;
   
@@ -112,14 +113,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCoupon(null);
   };
 
-  const applyCoupon = (code: string) => {
+  const applyCoupon = async (code: string) => {
     const cleanCode = code.trim().toUpperCase();
     if (!cleanCode) {
       return { success: false, message: 'Ingresa un código de cupón' };
     }
 
-    const valid10PercentCodes = ['MAGIC10', 'DESTINO10', 'KAWAII10', 'KAWAII', 'SCOOP10', 'MAGIC15', 'SUPERMAGIA', 'KAWAII5', 'STICKERBONUS'];
+    // Call Supabase to validate
+    const res = await validateCoupon(cleanCode);
+    if (res.valid && res.coupon) {
+      const newCoupon = { code: cleanCode, discountPercent: res.coupon.discount_percent };
+      setCoupon(newCoupon);
+      triggerConfetti();
+      return { success: true, message: `¡Cupón de ${res.coupon.discount_percent}% OFF aplicado con éxito! ✨` };
+    }
 
+    // Fallback for hardcoded game codes just in case they aren't in DB yet
+    const valid10PercentCodes = ['MAGIC10', 'DESTINO10', 'KAWAII10', 'KAWAII', 'SCOOP10', 'MAGIC15', 'SUPERMAGIA', 'KAWAII5', 'STICKERBONUS'];
     if (valid10PercentCodes.includes(cleanCode)) {
       const newCoupon = { code: cleanCode, discountPercent: 10 };
       setCoupon(newCoupon);
@@ -127,7 +137,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return { success: true, message: '¡Cupón de 10% OFF aplicado con éxito! ✨' };
     }
 
-    return { success: false, message: 'Cupón no válido o expirado' };
+    return { success: false, message: res.message || 'Cupón no válido o expirado' };
   };
 
   const removeCoupon = () => {
