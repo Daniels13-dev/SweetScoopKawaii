@@ -28,6 +28,12 @@ interface CartContextType {
   setIsGame2Open: (open: boolean) => void;
   isCheckoutOpen: boolean;
   setIsCheckoutOpen: (open: boolean) => void;
+  isCharmsModalOpen: boolean;
+  setIsCharmsModalOpen: (open: boolean) => void;
+  charmsModalWorld: WorldId;
+  setCharmsModalWorld: (world: WorldId) => void;
+  selectedPreferredCharms: string[];
+  togglePreferredCharm: (charmName: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,6 +48,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isGame1Open, setIsGame1Open] = useState(false);
   const [isGame2Open, setIsGame2Open] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isCharmsModalOpen, setIsCharmsModalOpen] = useState(false);
+  const [charmsModalWorld, setCharmsModalWorld] = useState<WorldId>('kawaii');
+  const [selectedPreferredCharms, setSelectedPreferredCharms] = useState<string[]>([]);
+
+  const togglePreferredCharm = (charmName: string) => {
+    setSelectedPreferredCharms(prev => {
+      if (prev.includes(charmName)) {
+        return prev.filter(c => c !== charmName);
+      }
+      if (prev.length >= 3) {
+        return [...prev.slice(1), charmName];
+      }
+      return [...prev, charmName];
+    });
+  };
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -165,7 +186,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isGame2Open,
         setIsGame2Open,
         isCheckoutOpen,
-        setIsCheckoutOpen
+        setIsCheckoutOpen,
+        isCharmsModalOpen,
+        setIsCharmsModalOpen,
+        charmsModalWorld,
+        setCharmsModalWorld,
+        selectedPreferredCharms,
+        togglePreferredCharm
       }}
     >
       {children}
