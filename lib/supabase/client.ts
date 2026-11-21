@@ -30,7 +30,9 @@ export async function saveOrderToSupabase(orderData: any) {
           whatsapp: orderData.whatsapp,
           city: orderData.city,
           address: orderData.address,
-          notes: orderData.notes || '',
+          notes: orderData.preferredCharms && orderData.preferredCharms.length > 0
+            ? `${orderData.notes ? orderData.notes + ' | ' : ''}✨ Dijes Favoritos: ${orderData.preferredCharms.join(', ')}`
+            : (orderData.notes || ''),
           items: orderData.cartItems,
           subtotal: orderData.subtotal,
           discount_amount: orderData.discountAmount,

@@ -9,6 +9,7 @@ import { FaqSection } from '@/components/faq/FaqSection';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { SizeSelectorModal } from '@/components/worlds/SizeSelectorModal';
+import { CharmsBoardModal } from '@/components/worlds/CharmsBoardModal';
 import { AtrapaLaTernuraModal } from '@/components/gamification/AtrapaLaTernuraModal';
 import { RuletaDelDestinoModal } from '@/components/gamification/RuletaDelDestinoModal';
 import { CheckoutModal } from '@/components/checkout/CheckoutModal';
@@ -38,6 +39,7 @@ export default function Home() {
       {/* Interactive Global Modals & Drawers */}
       <CartDrawer />
       <SizeSelectorModal />
+      <CharmsBoardModal />
       <AtrapaLaTernuraModal />
       <RuletaDelDestinoModal />
       <CheckoutModal />

@@ -20,10 +20,24 @@ export interface ScoopProduct {
   imageBgColor: string;
 }
 
+export type CharmRarity = 'comun' | 'raro' | 'legendario';
+
+export interface Charm {
+  id: string;
+  worldId: WorldId;
+  name: string;
+  emoji: string;
+  reward: string;
+  rarity: CharmRarity;
+  category: string;
+  color?: string;
+}
+
 export interface CartItem {
   cartId: string;
   product: ScoopProduct;
   quantity: number;
+  selectedCharms?: string[]; // IDs or names of favorite charms
 }
 
 export interface AppliedCoupon {
@@ -45,6 +59,7 @@ export interface OrderPayload {
   totalAmount: number;
   magicSurpriseUnlocked: boolean;
   couponCode?: string;
+  preferredCharms?: string[]; // Nombres o IDs de dijes favoritos del cliente
 }
 
 export interface UserProfile {
