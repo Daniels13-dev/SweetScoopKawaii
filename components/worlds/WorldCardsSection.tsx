@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Heart, ArrowRight, CheckCircle2, Gift } from 'lucide-react';
+import { Sparkles, Heart, ArrowRight, CheckCircle2, Gift, Eye } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { WorldId } from '@/lib/types';
 import { SCOOP_PRODUCTS } from '@/lib/constants';
 
 export function WorldCardsSection() {
-  const { setSizeModalWorld, addItem } = useCart();
+  const { setSizeModalWorld, addItem, setIsCharmsModalOpen, setCharmsModalWorld } = useCart();
 
   const worlds = [
     {
@@ -119,10 +119,21 @@ export function WorldCardsSection() {
               </div>
 
               {/* World CTA Trigger Button */}
-              <div className="mt-8">
+              <div className="mt-8 space-y-2.5">
+                <button
+                  onClick={() => {
+                    setCharmsModalWorld(world.id);
+                    setIsCharmsModalOpen(true);
+                  }}
+                  className="w-full py-2.5 px-4 rounded-full bg-white/80 hover:bg-white border border-pink-300 text-pink-900 font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all cursor-pointer"
+                >
+                  <Eye className="w-3.5 h-3.5 text-pink-600" />
+                  <span>Ver Tablero de Dijes ({world.id === 'kawaii' ? '30' : world.id === 'beauty' ? '25' : '20'} dijes)</span>
+                </button>
+
                 <button
                   onClick={() => handleWorldClick(world.id)}
-                  className="w-full py-4 rounded-full kawaii-gradient-btn text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg group-hover:scale-102 transition-transform"
+                  className="w-full py-4 rounded-full kawaii-gradient-btn text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg group-hover:scale-102 transition-transform cursor-pointer"
                 >
                   <span>
                     {world.id === 'dulceria'

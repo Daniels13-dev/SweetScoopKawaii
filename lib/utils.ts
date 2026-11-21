@@ -85,6 +85,7 @@ export interface OrderFormData {
   address: string;
   notes?: string;
   paymentMethod: string;
+  preferredCharms?: string[];
 }
 
 export function buildWhatsAppOrderLink(
@@ -134,6 +135,10 @@ export function buildWhatsAppOrderLink(
 • *Abono para Separar Turno:* ${formatCurrency(depositAmount)} (No reembolsable, 100% redimible en el pago total).
 • *Saldo Restante a Pagar (tras ver tu video):* ${formatCurrency(remainingBalance)}`;
 
+  const charmsText = formData.preferredCharms && formData.preferredCharms.length > 0
+    ? `\n✨ *Mis Dijes Favoritos del Tablero:* ${formData.preferredCharms.join(', ')} (¡Ojalá me salgan en el video!)`
+    : '';
+
   const message = `¡Hola Sweet Scoop Kawaii! ${RIBBON}${HEART}${SPARKLES}
 Quiero manifestar mi suerte y realizar mi pedido mágico:
 
@@ -141,7 +146,7 @@ ${USER} *Cliente:* ${formData.customerName}
 ${PHONE} *WhatsApp:* ${formData.whatsapp}
 ${PIN} *Ciudad:* ${formData.city}
 ${HOUSE} *Dirección:* ${formData.address}
-${formData.notes ? `${MEMO} *Notas:* ${formData.notes}\n` : ''}${CARD} *Método de Pago:* ${formData.paymentMethod.toUpperCase()}
+${formData.notes ? `${MEMO} *Notas:* ${formData.notes}\n` : ''}${CARD} *Método de Pago:* ${formData.paymentMethod.toUpperCase()}${charmsText}
 
 ${PACKAGE} *DETALLE DE MI SCOOP:*
 ${itemsText}
